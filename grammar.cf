@@ -1,0 +1,176 @@
+-- programs ------------------------------------------------
+
+entrypoints Program ;
+
+Program.   Program ::= [TopDef] ;
+
+FnDef.	   TopDef ::= Type Ident "(" [Arg] ")" Block ;
+
+VarDef.    TopDef ::= Init;
+
+separator nonempty TopDef "" ;
+
+Arg. 	   Arg ::= Type Ident;
+
+-- Przekazywanie przez zmienną
+RefArg.    Arg ::= Type "&" Ident ;
+
+separator  Arg "," ;
+
+-- statements ----------------------------------------------
+
+Block.     Block ::= "{" [Stmt] "}" ;
+
+separator  Stmt "" ;
+
+Empty.     Stmt ::= ";" ;
+
+BStmt.     Stmt ::= Block ;
+
+-- Zagnieżdzona definicje
+FnStmt.    Stmt ::= TopDef ;
+
+Decl.      Stmt ::= Type [Item] ";" ;
+
+NoInit.    Item ::= Ident ; 
+
+TopInit.   Init ::= Type [Item] ";";
+
+Init.      Item ::= Ident "=" Expr ;
+
+separator nonempty Item "," ;
+
+Ass.       Stmt ::= Ident "=" Expr  ";" ;
+
+-- Przypisanie wartości do tablicy lub krotki pod konkretnym indeksem
+ArrAss.    Stmt ::= Ident "[" Expr "]" "=" Expr ";" ;
+
+-- Pythonowe przypisanie do krotki
+TupleAss.  Stmt ::= "(" [Ident] ")" "=" Expr ";" ;
+
+separator nonempty Ident "," ;
+
+Incr.      Stmt ::= Ident "++"  ";" ;
+
+Decr.      Stmt ::= Ident "--"  ";" ;
+
+-- Procedura print
+Print.     Stmt ::= "print" Expr ";" ;
+
+Ret.       Stmt ::= "return" Expr ";" ;
+
+VRet.      Stmt ::= "return" ";" ;
+
+Cond.      Stmt ::= "if" "(" Expr ")" Stmt  ;
+
+CondElse.  Stmt ::= "if" "(" Expr ")" Stmt "else" Stmt  ;
+
+While.     Stmt ::= "while" "(" Expr ")" Stmt ;
+
+-- Zmiana wielkości tablicy. Przy skracaniu tracona jest odpowiednia ilość elementów na końcu tablicy. Przy rozszerzaniu dodane elementy odpowiadają 0 dla danego typu (0 dla int, flase dla bool, "" dla string itp.)
+Resize.    Stmt ::= "resize" Ident Integer ;
+
+-- Zmiana wielkości tablicy. Przy skracaniu tracona jest odpowiednia ilość elementów na końcu tablicy. Przy rozszerzaniu dodane elementy odpowiadają 0 dla danego typu (0 dla int, flase dla bool, "" dla string itp.)
+ResizeId.  Stmt ::= "resize" Ident Expr ;
+
+-- Break
+Break.     Stmt ::= "break" ";" ;
+
+-- Continue
+Continue.  Stmt ::= "continue" ";" ;
+
+SExp.      Stmt ::= Expr  ";" ;
+
+-- Types ---------------------------------------------------
+
+Int.       Type ::= "int" ;
+
+Str.       Type ::= "string" ;
+
+Bool.      Type ::= "bool" ;
+
+Void.      Type ::= "void" ;
+
+-- Typ tablicy
+Arr.       Type ::= Type "[]" ;
+
+-- Typ krotki
+Tuple.     Type ::= "Tuple" "(" [Type] ")" ;
+
+internal   Fun. Type ::= Type "(" [Arg] ")" ; 
+
+separator  Type "," ;
+
+-- Expressions ---------------------------------------------
+
+EVar.      Expr6 ::= Ident ;
+
+-- Odczytanie wartości zmiennej pod danym indeksem tablicy, lub danego elementu krotki
+EArr.      Expr6 ::= Ident "[" Expr "]" ;
+
+-- Ilość elementów w tablicy
+ESize.     Expr6 ::= "size" Ident ;
+
+-- Sposób na stworzenie nowej tablicy o danym rozmiarze. Wstawione elementy odpowiadają 0 dla danego typu (0 dla int, flase dla bool, "" dla string itp.)
+ENewArr.   Expr6 ::= "new" Type "[" Expr "]" ;
+
+ELitInt.   Expr6 ::= Integer ;
+
+ELitTrue.  Expr6 ::= "true" ;
+
+ELitFalse. Expr6 ::= "false" ;
+
+ToString.  Expr6 ::= "toString" Expr;
+
+-- Stworzenie nowej krotki
+ETuple.    Expr6 ::= "newTuple" "(" [Expr] ")" ;
+
+ETuple2.   Expr6 ::= "(" Expr "," [Expr] ")" ;
+
+NewArray.  Expr6 ::= "[" [Expr] "]";
+
+EApp.      Expr6 ::= Ident "(" [Expr] ")" ;
+
+EString.   Expr6 ::= String ;
+
+Neg.       Expr5 ::= "-" Expr6 ;
+
+Not.       Expr5 ::= "!" Expr6 ;
+
+EMul.      Expr4 ::= Expr4 MulOp Expr5 ;
+
+EAdd.      Expr3 ::= Expr3 AddOp Expr4 ;
+
+ERel.      Expr2 ::= Expr2 RelOp Expr3 ;
+
+EAnd.      Expr1 ::= Expr2 "&&" Expr1 ;
+
+EOr.       Expr ::= Expr1 "||" Expr ;
+
+coercions  Expr 6 ;
+
+separator  Expr "," ;
+
+-- operators -----------------------------------------------
+
+Plus.      AddOp ::= "+" ;
+
+Minus.     AddOp ::= "-" ;
+
+Times.     MulOp ::= "*" ;
+
+Div.       MulOp ::= "/" ;
+
+Mod.       MulOp ::= "%" ;
+
+LTH.       RelOp ::= "<" ;
+
+LE.        RelOp ::= "<=" ;
+
+GTH.       RelOp ::= ">" ;
+
+GE.        RelOp ::= ">=" ;
+
+EQU.       RelOp ::= "==" ;
+
+NE.        RelOp ::= "!=" ;
